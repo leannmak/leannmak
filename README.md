@@ -1,5 +1,5 @@
 # leannmak
-Create a new branch mine.
+Creating a new branch mine.
 Hello I'm Branch BB.
 
 
