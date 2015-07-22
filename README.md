@@ -1,5 +1,6 @@
 # leannmak
-Creating a new branch mine.
-Hello I'm Branch BB.
-Branch M
+
+It's my study notes.
+F.Y.R.
+:-)
 
