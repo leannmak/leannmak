@@ -68,7 +68,7 @@ PS: 文件提交路径：工作区--git add-->暂存区--git commit-->当前分�
 提交后，用git diff HEAD -- file命令可以查看工作区和版本库里面最新版本的区别。
 
 * git format-patch (-1): 生成patch文件，可以打出任意两个版本之间的区别。
-						-1表示最近的一次变更，后跟commit_id可指定任意commit之间的差异，但每次变更打一个文件。
+	-1表示最近的一次变更，后跟commit_id可指定任意commit之间的差异，但每次变更打一个文件。
 * git am patch-file
 
 PS：HEAD指向的版本就是版本库里的当前版本，HEAD^指向当前版本的上一版本，HEAD~100指向当前版本的第前100个版本。
@@ -270,10 +270,3 @@ PS：一定要从自己的账号下clone仓库，这样你才能推送修改，�
 1）push时遇到error: The requested URL returned error: 403 Forbidden while accessing https://github.com/blah/xxx.git
 方法一： git clone https://username:password@github.com/xxxxx/xxx.git
 方法二： 修改.git/config文件：url = https://username:password@github.com/xxxxx/xxx.git
-
-
-
-
-
-
-
