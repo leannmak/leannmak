@@ -52,7 +52,7 @@ $ sudo service smb status
 smbd (pid  19087) is running...
 $ sudo service smb restart
 ```
-若Samba未启动，执行重启，否则直接`start`。
+若Samba未启动，执行重启，否则直接 `start` 。
 
 
 ### 2. 在Windows上设置网络驱动器:
@@ -65,7 +65,7 @@ $ sudo service smb restart
 
 控制面板 --> 小图标 --> 管理工具 --> 服务 --> Windows Firewall， 关闭。
 
-2) 检查Samba主机的`selinux`、`iptables`:
+2) 检查Samba主机的 `selinux` 、 `iptables` :
 
 修改**selinux**配置文件：
 ```
@@ -80,10 +80,10 @@ $ sudo setenforce 0
 $ sudo service iptables stop
 ```
 
-* 打开Windows 计算机 --> 映射网络驱动器，将 `\\samba主机的IP地址\share` 映射为Z:盘。
+* 打开 Windows 计算机 --> 映射网络驱动器，将 `\\samba主机的IP地址\share` 映射为Z:盘。
 
 
-### 3. 在Windows Z:盘中新建一个`leannmak.txt`文件，在Samba主机中查看：
+### 3. Windows Z:盘中新建一个文件，在Samba主机中查看：
 ```
 $ sudo cd /home/leannmak/share
 $ sudo ll
