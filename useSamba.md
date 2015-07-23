@@ -11,7 +11,7 @@ samba-3.6.23-14.el6_6.x86_64
 ```
  出现以上结果表明Samba已安装。
 
-* 若查询结果为空，则使用yum安装：
+* 若查询结果为空，则使用 `yum` 安装：
 ```
 $ sudo yum install samba samba-client
 ```
@@ -34,7 +34,7 @@ writable = yes
 ```
 `path` 将成为Linux和Windows的共享目录。
 
-* 在Linux中创建path目录，请确保该目录存在：
+* 在Linux中创建 `path` 目录，请确保该目录存在：
 ```
 $ cd /home/leannmak
 $ mkdir share
@@ -57,7 +57,7 @@ $ sudo service smb restart
 
 ### 2. 在Windows上设置网络驱动器:
 
-* 在 **开始** 菜单中搜索 **运行**，访问 "\\Samba主机的IP地址\share" 。
+* 在 **开始** 菜单中搜索 **运行**，访问 `\\Samba主机的IP地址\share` 。
 
 * 若访问不成功，请执行以下操作：
 
@@ -78,7 +78,7 @@ $ sudo setenforce 0
 $ sudo service iptables stop
 ```
 
-* 打开Windows "计算机" --> "映射网络驱动器"，将 "\\samba主机的IP地址\share" 映射为Z:盘。
+* 打开Windows 计算机 --> 映射网络驱动器，将 `\\samba主机的IP地址\share` 映射为Z:盘。
 
 
 ### 3. 在Windows Z:盘中新建一个`leannmak.txt`文件，在Samba主机中查看：
@@ -94,8 +94,5 @@ $ sudo ll
   Also **SELINUX** is **disabled** !!!
   
 
+  
 References: http://my.oschina.net/daisheng/blog/466520
-
-
-
-
