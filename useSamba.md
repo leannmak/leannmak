@@ -9,7 +9,7 @@ by leannmak  2015-7-24
 $ sudo rpm -qa samba
 samba-3.6.23-14.el6_6.x86_64
 ```
- 出现以上结果表明Samba已安装。
+出现以上结果表明Samba已安装。
 
 * 若查询结果为空，则使用 `yum` 安装：
 ```
@@ -62,18 +62,20 @@ $ sudo service smb restart
 * 若访问不成功，请执行以下操作：
 
 1) 确保Windows的防火墙已关闭：
+
 控制面板 --> 小图标 --> 管理工具 --> 服务 --> Windows Firewall， 关闭。
 
 2) 检查Samba主机的`selinux`、`iptables`:
-* 修改**selinux**配置文件：
+
+修改**selinux**配置文件：
 ```
 $ sudo vi /etc/sysconfig/selinux
 ```
-修改SELINUX=enforcing(默认值)为SELINUX=disabled，退出后执行：
+修改 `SELINUX=enforcing` (默认值)为 `SELINUX=disabled` ，退出后执行：
 ```
 $ sudo setenforce 0
 ```
-* 关闭Linux防火墙：
+关闭Linux防火墙：
 ```
 $ sudo service iptables stop
 ```
