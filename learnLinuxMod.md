@@ -4,6 +4,11 @@
 
 ### 4 roles:
 
+```bash
+$ ll
+total 1
+drwxr-xrwx.  3 root root 4096 Jul 27 13:35 leannmak
+```
 * user (u)
 * group (g)
 * others (o)
