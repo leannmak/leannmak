@@ -171,38 +171,38 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 
 4. 配置master/slave以及子域DNS：
 
-4.1 架构规划如下：
-* master DNS : 
-- eth0 ：10.0.100.64	(对外)
-- eth1 ：192.168.182.64	(对内)
-- 主机名与RR标志 ：
-    master.centos.leannmak (NS, A)
-    www.centos.leannmak (A)
-    linux.centos.leannmak (CNAME)
-    ftp.centos.leannmak (CNAME)
-    forum.centos.leannmak (CNAME)
-    www.centos.leannmak (MX)
-* slave DNS ：
+  4.1 架构规划如下：
+  + master DNS : 
+    - eth0 ：10.0.100.64	(对外)
+    - eth1 ：192.168.182.64	(对内)
+    - 主机名与RR标志 ：
+      * master.centos.leannmak (NS, A)
+      * www.centos.leannmak (A)
+      * linux.centos.leannmak (CNAME)
+      * ftp.centos.leannmak (CNAME)
+      * forum.centos.leannmak (CNAME)
+      * www.centos.leannmak (MX)
++ slave DNS ：
 - IP ：192.168.182.16
 - 主机名与RR标志 ：
-    slave.centos.leannmak (NS, A)
-    clientlinux.centos.leannmak(A)
-* 子域DNS ： 
+    * slave.centos.leannmak (NS, A)
+    * clientlinux.centos.leannmak(A)
++ 子域DNS ： 
 - IP ：192.168.182.15
 - 主机名与RR标志 ：
-    master.wiki.centos.leannmak (NS, A)
-    www.wiki.centos.leannmak (A)
-    linux.wiki.centos.leannmak (CNAME)
-    ftp.wiki.centos.leannmak (CNAME)
-    forum.wiki.centos.leannmak (CNAME)
-    www.wiki.centos.leannmak (MX)
+    * master.wiki.centos.leannmak (NS, A)
+    * www.wiki.centos.leannmak (A)
+    * linux.wiki.centos.leannmak (CNAME)
+    * ftp.wiki.centos.leannmak (CNAME)
+    * forum.wiki.centos.leannmak (CNAME)
+    * www.wiki.centos.leannmak (MX)
 
 4.2 master DNS：
 
 重点需要配置三个文件：
 - named.conf    # 主配置文件
-- named.centos.leannmak    # 自定义域名 `centos.leannmak` 的正解zone file
-- named.192.168.182 # 域名 `centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
+- named.centos.leannmak    # 自定义域名`centos.leannmak`的正解zone file
+- named.192.168.182 # 域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
 
 4.2.1 主配置 `named.conf`
 ```
@@ -301,9 +301,9 @@ dns.wiki.centos.leannmak.       IN      A       192.168.182.15
 **IMPORTANT TIPS**
 - `@` 代表zone， 此处`@` = `centos.leannmak.` 。 
 - 正解zone file中描述主机的两种方式：
-    * 使用FQDN：末尾一定要加 `.` ，否则视为hostname。如 `www.centos.leannmak` ，
+    * 使用FQDN ：末尾一定要加 `.` ，否则视为hostname。如 `www.centos.leannmak` ，
         在此处FQDN将被视为 `www.centos.leannmak.@` = `www.centos.leannmak.centos.leannmak.`；
-    * 使用hostname：如 `www`，相当于 `www.@` = `www.centos.vbird`。 
+    * 使用hostname ：如 `www`，相当于 `www.@` = `www.centos.vbird`。 
 - `;` 或 `#` 为注释符号。
 - 所有设定一定要从行首开始，前面不可有空格符，若有则代表延续前一行。
 
@@ -325,8 +325,8 @@ $TTL    600
 ```
 
 **IMPORTANT TIPS**
-- `@` 代表zone， 此处`@` = `182.168.192.in-addr.arpa. ` ； 
-- 反解zone file中一般只用IP的最后一个字段表示IP，如 `64` = `192.168.182.64`；
+- `@` 代表zone，此处`@`=`182.168.192.in-addr.arpa.`； 
+- 反解zone file中一般只用IP的最后一个字段表示IP，如`64`=`192.168.182.64`；
 - 在反解中用到主机名时，务必使用FQDN设定。
 
 4.2.4 其他需要配置的文件
@@ -508,13 +508,12 @@ $ dig -x 192.168.182.64 @127.0.0.1
 
 4.4 子域DNS
 
-# 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
-    - named.conf    # 主配置文件
-    - named.wiki.centos.leannmak    # 子域名 `wiki.centos.leannmak` 的正解zone file
-    - named.192.168.182 # 域名 `wiki.centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
+* 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
+- named.conf    # 主配置文件
+- named.wiki.centos.leannmak    # 子域名 `wiki.centos.leannmak` 的正解zone file
+- named.192.168.182 # 域名 `wiki.centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
 
-# 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，
-    记得同时修改 `iptables` 和 `resolv.conf`。
+* 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，记得同时修改 `iptables` 和 `resolv.conf`。
 
 4.4.1 主配置 `named.conf`
 ```
