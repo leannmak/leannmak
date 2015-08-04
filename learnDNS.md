@@ -29,7 +29,7 @@ by leannmak 2015-8-3
   + slave： 相当于master备库，直接从master取得配置。
 - master和slave在查询时并未有固定优先级，遵从DNS **先抢先赢** 原则。
 
-2.1 正解：通过主机名查IP
+#### 2.1 正解：通过主机名查IP
 
 ```
 $ sudo dig www.google.com
@@ -82,7 +82,7 @@ $ sudo dig -t mx google.com
 ```
   number：用于设置优先级，数字越小的上层邮件服务器优先收受信件。
 
-2.2 反解：通过IP查主机名
+#### 2.2 反解：通过IP查主机名
 
 ```
 $ sudo dig -x 216.239.32.10
@@ -170,7 +170,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 
 ### 配置master/slave以及子域DNS：
 
-4.1 架构规划如下：
+#### 4.1 架构规划：
 + master DNS : 
   - eth0 ：10.0.100.64	(对外)
   - eth1 ：192.168.182.64	(对内)
@@ -196,7 +196,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
     * forum.wiki.centos.leannmak (CNAME)
     * www.wiki.centos.leannmak (MX)
 
-4.2 master DNS：
+#### 4.2 master DNS：
 
 重点需要配置三个文件：
 - named.conf    #主配置文件
@@ -422,7 +422,7 @@ $ sudo dig -x 192.168.182.16
 ...
 ```
 
-4.3 slave DNS：
+#### 4.3 slave DNS：
 
 只需要重点配置一个文件，当然别忘了 `iptables` 和 `resolv.conf` ：
 - named.conf    # 主配置文件
@@ -504,7 +504,7 @@ $ dig -x 192.168.182.64 @127.0.0.1
 ...
 ```
 
-4.4 子域DNS
+#### 4.4 子域DNS
 
 * 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
 - named.conf    # 主配置文件
