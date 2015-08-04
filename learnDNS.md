@@ -134,27 +134,27 @@ options {
 };
 ```
 
-(1) listen-on port 53 { any; };
+(1) **listen-on port 53 { any; };**
 
   `port 53`是DNS默认端口，设为 `any` 时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
 
-(2) directory "/var/named";
+(2) **directory "/var/named";**
 
   正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
 
-(3) dump-file, statistics-file, memstatistics-file
+(3) **dump-file, statistics-file, memstatistics-file**
 
   与named服务有关的统计信息记录文档，可不设置。
 
-(4) allow-query { any; };
+(4) **allow-query { any; };**
 
   设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
 
-(5) forward only ;
+(5) **forward only ;**
 
   表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
 
-(6) forwarders { 192.168.182.64;  192.168.182.16; } ;
+(6) **forwarders { 192.168.182.64;  192.168.182.16; } ;**
 
   设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
 
@@ -221,9 +221,9 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 #### 4.2 master DNS：
 
 重点需要配置三个文件：
-- *named.conf*    #主配置文件
-- *named.centos.leannmak*    #自定义域名 `centos.leannmak` 的正解zone file
-- *named.192.168.182*   #域名 `centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
+- `named.conf`    #主配置文件
+- `named.centos.leannmak`    #自定义域名 *centos.leannmak* 的正解zone file
+- `named.192.168.182`   #域名 *centos.leannmak* 对应网段 *192.168.182.0/24* 的反解zone file
 
 
 ##### 4.2.1 主配置 *named.conf*
@@ -322,10 +322,10 @@ dns.wiki.centos.leannmak.       IN      A       192.168.182.15
 ```
 
 **IMPORTANT TIPS**
-- `@` 代表zone， 此处 `@` = `centos.leannmak.` 。 
+- `@` 代表zone， 此处 `@` = *centos.leannmak.* 。 
 - 正解zone file中描述主机的两种方式：
-    * 使用FQDN ：末尾一定要加 `.` ，否则视为hostname。如 `www.centos.leannmak` ，在此处FQDN将被视为 `www.centos.leannmak.@` = `www.centos.leannmak.centos.leannmak.` ；
-    * 使用hostname ：如 `www`，相当于 `www.@` = `www.centos.vbird` 。 
+    * 使用 **FQDN** ：末尾一定要加 `.` ，否则视为hostname。如 *www.centos.leannmak* ，在此处FQDN将被视为 *www.centos.leannmak.@* = *www.centos.leannmak.centos.leannmak.* ；
+    * 使用 **hostname** ：如 *www*，相当于 *www.@* = *www.centos.vbird* 。 
 - `;` 或 `#` 为注释符号。
 - 所有设定一定要从行首开始，前面不可有空格符，若有则代表延续前一行。
 
@@ -348,8 +348,8 @@ $TTL    600
 ```
 
 **IMPORTANT TIPS**
-- `@` 代表zone，此处`@`=`182.168.192.in-addr.arpa.`； 
-- 反解zone file中一般只用IP的最后一个字段表示IP，如`64`=`192.168.182.64`；
+- `@` 代表zone，此处 `@` = *182.168.192.in-addr.arpa.*； 
+- 反解zone file中一般只用IP的最后一个字段表示IP，如 `64` = *192.168.182.64*；
 - 在反解中用到主机名时，务必使用FQDN设定。
 
 
@@ -536,11 +536,11 @@ $ dig -x 192.168.182.64 @127.0.0.1
 #### 4.4 子域DNS
 
 * 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
-- *named.conf*    # 主配置文件
-- *named.wiki.centos.leannmak*    # 子域名 `wiki.centos.leannmak` 的正解zone file
-- *named.192.168.182*    # 域名 `wiki.centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
+- `named.conf`    # 主配置文件
+- `named.wiki.centos.leannmak`    # 子域名 *wiki.centos.leannmak* 的正解zone file
+- `named.192.168.182`    # 域名 *wiki.centos.leannmak* 对应网段 *192.168.182.0/24* 的反解zone file
 
-* 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，记得同时修改 `iptables` 和 `resolv.conf`。
+* 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，记得同时修改 *iptables* 和 *resolv.conf*。
 
 
 ##### 4.4.1 主配置 *named.conf*
