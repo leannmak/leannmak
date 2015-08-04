@@ -2,7 +2,7 @@
 
 by leannmak 2015-8-3
 
-### 架设DNS所需要的软件：
+### 1 架设DNS所需要的软件：
   ```bash
   $ sudo yum install bind
   $ sudo yum install bind-chroot
@@ -16,7 +16,7 @@ by leannmak 2015-8-3
 
   安装之前可以先用 `rpm` 查看一下，一定要保证以上四个全都有哦。
 
-### DNS基础：
+### 2 DNS基础：
 
 **IMPORTANT TIPS**
 - DNS：域名服务器，主要用于域名与IP的管理和解析，目前应用最广的是Berkeley Internet Name Domain, BIND。
@@ -41,16 +41,16 @@ google.com.             8981    IN      NS      ns1.google.com.
 ...
 ```
 
-**RR标志说明**：
+**正解RR标志说明**
 
-- A, AAAA ：查询 IP 的记录
+- A, AAAA ：查询IP的记录
 ```
 $ sudo dig www.google.com
 主机名.   IN  A           IPv4 的 IP 地址
 主机名.   IN  AAAA        IPv6 的 IP 地址
 ```
 
-- NS ：查询管理领域名 (zone) 的服务器主机名
+- NS ：查询管理领域名(zone)的服务器主机名
 ```
 $ sudo dig -t ns google.com
 领域名.   IN  NS          管理这个领域名的服务器主机名字.
@@ -61,15 +61,15 @@ $ sudo dig -t ns google.com
 $ sudo dig -t soa google.com
 领域名.  IN  SOA  [Master DNS   Email   Serial   Refresh   Retry   Expire   Minumum TTL]  
 ```
-  * Master DNS: master服务器主机名。
-  * Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
-  * Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
-  * Refresh: slave向master要求数据更新的频率。
-  * Retry： slave对master联机失败后，重新尝试联机的时间间隔。
-  * Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
-  * Minumum TTL： zone file中每笔记录的默认快取时间。
+  (1) Master DNS: master服务器主机名。
+  (2) Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
+  (3) Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
+  (4) Refresh: slave向master要求数据更新的频率。
+  (5) Retry： slave对master联机失败后，重新尝试联机的时间间隔。
+  (6) Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
+  (7) Minumum TTL： zone file中每笔记录的默认快取时间。
 
-- CNAME ：设定某主机名的别名 (alias)
+- CNAME ：设定某主机名的别名(alias)
 ```
 $ sudo dig www.google.com
 主机别名.   IN  CNAME       实际代表这个主机别名的主机名字.
@@ -92,10 +92,11 @@ $ sudo dig -x 216.239.32.10
 ...
 ```
 
-- PTR ：查询IP所对应的主机名
-  反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
+**正解RR标志说明**
 
-### 配置cache-only DNS：
+PTR ：查询IP所对应的主机名。反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
+
+### 3 配置cache-only DNS：
 
 1) cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
 
@@ -168,7 +169,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 - DNS默认会同时启用UDP/TCP的 `port 53` 。
 - 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
 
-### 配置master/slave以及子域DNS：
+### 4 配置master/slave以及子域DNS：
 
 #### 4.1 架构规划：
 + master DNS : 
