@@ -16,6 +16,7 @@ by leannmak 2015-8-3
 
   安装之前可以先用 `rpm` 查看一下，一定要保证以上四个全都有哦。
 
+
 ### 2 DNS基础：
 
 **IMPORTANT TIPS**
@@ -28,6 +29,7 @@ by leannmak 2015-8-3
   + master： 主DNS，需要手动配置；
   + slave： 相当于master备库，直接从master取得配置。
 - master和slave在查询时并未有固定优先级，遵从DNS **先抢先赢** 原则。
+
 
 #### 2.1 正解：通过主机名查IP
 
@@ -75,6 +77,7 @@ $ sudo dig -t soa google.com
 
   (7) Minumum TTL： zone file中每笔记录的默认快取时间。
 
+
 - CNAME ：设定某主机名的别名(alias)
 ```
 $ sudo dig www.google.com
@@ -87,6 +90,7 @@ $ sudo dig -t mx google.com
 领域名.   IN  MX          number  接收邮件的服务器主机名字
 ```
 其中，number用于设置优先级，数字越小的上层邮件服务器优先收受信件。
+
 
 #### 2.2 反解：通过IP查主机名
 
@@ -101,6 +105,7 @@ $ sudo dig -x 216.239.32.10
 **反解RR标志说明**
 
 PTR ：查询IP所对应的主机名。反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
+
 
 ### 3 配置cache-only DNS：
 
@@ -175,6 +180,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 - DNS默认会同时启用UDP/TCP的 `port 53` 。
 - 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
 
+
 ### 4 配置master/slave以及子域DNS：
 
 #### 4.1 架构规划：
@@ -203,6 +209,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
     * forum.wiki.centos.leannmak (CNAME)
     * www.wiki.centos.leannmak (MX)
 
+
 #### 4.2 master DNS：
 
 重点需要配置三个文件：
@@ -210,7 +217,8 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 - *named.centos.leannmak*    #自定义域名 `centos.leannmak` 的正解zone file
 - *named.192.168.182*   #域名 `centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
 
-4.2.1 主配置 *named.conf*
+
+##### 4.2.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf 
  1 // named.config
@@ -268,9 +276,11 @@ $ sudo vim /etc/named.conf
 ```
 
 - 第14、15、17、18、36、38-52为DNS的view功能配置，当每台主机上有两张网卡时，可通过view的设置使内外网用户查询得到的IP分离。不需要时直接将这几行内容注释掉即可。
+
 - 若在此配置了view，请务必同时完成 *named.centos.leannmak.inter* 的配置，详见4.2.4.3。 
 
-4.2.2 正解 *named.centos.leannmak*
+
+##### 4.2.2 正解 *named.centos.leannmak*
 
 ```
 $ sudo vim /var/named/named.centos.leannmak
@@ -311,6 +321,7 @@ dns.wiki.centos.leannmak.       IN      A       192.168.182.15
 - `;` 或 `#` 为注释符号。
 - 所有设定一定要从行首开始，前面不可有空格符，若有则代表延续前一行。
 
+
 4.2.3 反解 *named.192.168.182*
 
 ```
@@ -333,7 +344,8 @@ $TTL    600
 - 反解zone file中一般只用IP的最后一个字段表示IP，如`64`=`192.168.182.64`；
 - 在反解中用到主机名时，务必使用FQDN设定。
 
-4.2.4 其他需要配置的文件
+
+##### 4.2.4 其他需要配置的文件
 
 4.2.4.1 防火墙 *iptables*
 
@@ -373,7 +385,7 @@ ftp.centos.leannmak.    IN      CNAME   www.centos.leannmak.
 forum.centos.leannmak.  IN      CNAME   www.centos.leannmak.
 ```
 
-4.2.5 启动或重启DNS
+##### 4.2.5 启动或重启DNS
 
 配置完成后，记得启动或重新启动named服务，并测试及查看相关信息：
 
@@ -433,7 +445,8 @@ $ sudo dig -x 192.168.182.16
 只需要重点配置一个文件，当然别忘了 `iptables` 和 `resolv.conf` ：
 - *named.conf*    # 主配置文件
 
-4.3.1 主配置 *named.conf*
+
+##### 4.3.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf
 // named.conf
@@ -472,7 +485,8 @@ $ sudo ll -d /var/named/slaves
 drwxrwx--- 2 named named 4096 Aug  3 10:24 /var/named/slaves
 ```
 
-4.3.2 启动或重启DNS
+
+##### 4.3.2 启动或重启DNS
 
 配置完成后，记得启动或重新启动named服务，并测试及查看相关信息：
 
@@ -510,6 +524,7 @@ $ dig -x 192.168.182.64 @127.0.0.1
 ...
 ```
 
+
 #### 4.4 子域DNS
 
 * 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
@@ -519,7 +534,8 @@ $ dig -x 192.168.182.64 @127.0.0.1
 
 * 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，记得同时修改 `iptables` 和 `resolv.conf`。
 
-4.4.1 主配置 *named.conf*
+
+##### 4.4.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf 
 options {
@@ -547,7 +563,8 @@ zone "182.168.192.in-addr.arpa" IN {
 };
 ```
 
-4.4.2 正解 *named.wiki.centos.leannmak*
+
+##### 4.4.2 正解 *named.wiki.centos.leannmak*
 
 ```
 $ sudo vim /var/named/named.centos.leannmak
@@ -565,7 +582,8 @@ ftp.wiki.centos.leannmak.    IN      CNAME   www.wiki.centos.leannmak.
 forum.wiki.centos.leannmak.  IN      CNAME   www.wiki.centos.leannmak.
 ```
 
-4.4.3 反解 *named.192.168.182*
+
+##### 4.4.3 反解 *named.192.168.182*
 
 ```
 $ sudo vim /var/named/named.192.168.182
@@ -578,7 +596,8 @@ $TTL    600
 15      IN      PTR     www.wiki.centos.leannmak.
 ```
 
-4.4.4 启动或重启DNS
+
+##### 4.4.4 启动或重启DNS
 
 配置完成后，记得启动或重新启动named服务，并测试及查看相关信息：
 
