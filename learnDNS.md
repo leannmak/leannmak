@@ -61,7 +61,7 @@ $ sudo dig -t ns google.com
 $ sudo dig -t soa google.com
 领域名.  IN  SOA  [Master DNS   Email   Serial   Refresh   Retry   Expire   Minumum TTL]  
 ```
-  SOA的七大参数含义：
+  * SOA的七大参数含义：
     - Master DNS: master服务器主机名。
     - Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
     - Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
