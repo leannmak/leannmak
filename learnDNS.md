@@ -2,7 +2,7 @@
 
 by leannmak 2015-8-3
 
-1. 架设DNS所需要的软件：
+### 架设DNS所需要的软件：
   ```bash
   $ sudo yum install bind
   $ sudo yum install bind-chroot
@@ -16,20 +16,20 @@ by leannmak 2015-8-3
 
   安装之前可以先用 `rpm` 查看一下，一定要保证以上四个全都有哦。
 
-2. DNS基础：
+### DNS基础：
 
-  **IMPORTANT TIPS**
-  - DNS：域名服务器，主要用于域名与IP的管理和解析，目前应用最广的是Berkeley Internet Name Domain, BIND。
-  - DNS利用类似树状目录的架构，将主机名的管理分配在不同层级的DNS服务器，每个上一层的DNS所记录的信息，只有其下一层的主机名。
-  - 在 `.` (root)下有六大一般最上层域名如`.com`，`.org`，`.edu`，`.gov`，`.net`，`.mil`，以及国码最上层域名如`.cn`。
-  - 完整主机名FQDN：即 `主机名 + 完整域名` ， 务必在最后加 `.` 表示最上层root DNS，如 `www.google.com.` 。
-  - zone类型：
-    + hint： `.` (root)；
-    + master： 主DNS，需要手动配置；
-    + slave： 相当于master备库，直接从master取得配置。
-  - master和slave在查询时并未有固定优先级，遵从DNS **先抢先赢** 原则。
+**IMPORTANT TIPS**
+- DNS：域名服务器，主要用于域名与IP的管理和解析，目前应用最广的是Berkeley Internet Name Domain, BIND。
+- DNS利用类似树状目录的架构，将主机名的管理分配在不同层级的DNS服务器，每个上一层的DNS所记录的信息，只有其下一层的主机名。
+- 在 `.` (root)下有六大一般最上层域名如`.com`，`.org`，`.edu`，`.gov`，`.net`，`.mil`，以及国码最上层域名如`.cn`。
+- 完整主机名FQDN：即 `主机名 + 完整域名` ， 务必在最后加 `.` 表示最上层root DNS，如 `www.google.com.` 。
+- zone类型：
+  + hint： `.` (root)；
+  + master： 主DNS，需要手动配置；
+  + slave： 相当于master备库，直接从master取得配置。
+- master和slave在查询时并未有固定优先级，遵从DNS **先抢先赢** 原则。
 
-  2.1 正解：通过主机名查IP
+2.1 正解：通过主机名查IP
 
     ```
     $ sudo dig www.google.com
