@@ -109,11 +109,11 @@ PTR ：查询IP所对应的主机名。反解的zone必须将IP反过来写，�
 
 ### 3 配置cache-only DNS
 
-1) cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
+* cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
 
-2) 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
+* 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
 
-3) 配置时，只需修改Bind的主配置文件 */etc/named.conf* ：
+* 配置时，只需修改Bind的主配置文件 */etc/named.conf* ：
 
 ```
 $ sudo vim /etc/named.conf
@@ -134,25 +134,32 @@ options {
 };
 ```
 
-- listen-on port 53 { any; };
-  `port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
+(1) listen-on port 53 { any; };
 
-- directory "/var/named";
-  正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
+`port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
 
-- dump-file, statistics-file, memstatistics-file
-  与named服务有关的统计信息记录文档，可不设置。
+(2) directory "/var/named";
 
-- allow-query { any; };
-  设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
+正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
 
-- forward only ;
-  表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
+(3) dump-file, statistics-file, memstatistics-file
 
-- forwarders { 192.168.182.64;  192.168.182.16; } ;
-  设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
+与named服务有关的统计信息记录文档，可不设置。
 
-4) 配置完成后，启动或重新启动named服务，查看：
+(4) allow-query { any; };
+
+设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
+
+(5) forward only ;
+
+表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
+
+(6) forwarders { 192.168.182.64;  192.168.182.16; } ;
+
+设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
+
+
+* 配置完成后，启动或重新启动named服务，查看：
 
 ```
 $ sudo service named start
@@ -177,8 +184,9 @@ Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named
 Aug  4 09:56:03 ceilometer1 named[19141]: running
 ```
 
-- DNS默认会同时启用UDP/TCP的 `port 53` 。
-- 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
+(1) DNS默认会同时启用UDP/TCP的 `port 53` 。
+
+(2) 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
 
 
 ### 4 配置master/slave以及子域DNS
