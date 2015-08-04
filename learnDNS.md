@@ -2,7 +2,7 @@
 
 by leannmak 2015-8-3
 
-### 1 架设DNS所需要的软件：
+### 1 架设DNS所需要的软件
   ```bash
   $ sudo yum install bind
   $ sudo yum install bind-chroot
@@ -14,10 +14,10 @@ by leannmak 2015-8-3
   bind-utils-9.8.2-0.30.rc1.el6_6.3.x86_64
   ```
 
-  安装之前可以先用 `rpm` 查看一下，一定要保证以上四个全都有哦。
+  安装之前可以先用 `rpm` 查看一下，一定要保证以上四个都有，IMPORTANT！
 
 
-### 2 DNS基础：
+### 2 DNS基础
 
 **IMPORTANT TIPS**
 - DNS：域名服务器，主要用于域名与IP的管理和解析，目前应用最广的是Berkeley Internet Name Domain, BIND。
@@ -107,7 +107,7 @@ $ sudo dig -x 216.239.32.10
 PTR ：查询IP所对应的主机名。反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
 
 
-### 3 配置cache-only DNS：
+### 3 配置cache-only DNS
 
 1) cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
 
@@ -181,7 +181,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 - 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
 
 
-### 4 配置master/slave以及子域DNS：
+### 4 配置master/slave以及子域DNS
 
 #### 4.1 架构规划：
 + master DNS : 
@@ -322,7 +322,7 @@ dns.wiki.centos.leannmak.       IN      A       192.168.182.15
 - 所有设定一定要从行首开始，前面不可有空格符，若有则代表延续前一行。
 
 
-4.2.3 反解 *named.192.168.182*
+##### 4.2.3 反解 *named.192.168.182*
 
 ```
 $ sudo vim /var/named/named.192.168.182
@@ -347,7 +347,7 @@ $TTL    600
 
 ##### 4.2.4 其他需要配置的文件
 
-4.2.4.1 防火墙 *iptables*
+###### 4.2.4.1 防火墙 *iptables*
 
 ```
 $ sudo vim /etc/sysconfig/iptables
@@ -358,7 +358,7 @@ $ sudo vim /etc/sysconfig/iptables
 ...
 ```
 
-4.2.4.2 *resolv.conf*
+###### 4.2.4.2 *resolv.conf*
 
 ```
 $ sudo vim /etc/resolv.conf
@@ -366,7 +366,7 @@ nameserver 192.168.182.64  //自己的IP一定要最早出现
 nameserver 192.168.163.34
 ```
 
-4.2.4.3  外网view *named.centos.leannmak.inter*
+###### 4.2.4.3  外网view *named.centos.leannmak.inter*
 
 若 `named.config` 中配置了view功能，则务必同时配置该文档。
 
