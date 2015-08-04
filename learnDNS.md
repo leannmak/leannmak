@@ -164,8 +164,9 @@ by leannmak 2015-8-3
     Aug  4 09:56:03 ceilometer1 named[19141]: running
     ```
 
-    - DNS默认会同时启用UDP/TCP的 `port 53`。
-    - 每次重新启动DNS后，务必检查 `/var/log/messages` ，出现以上语句表示 `/var/named/etc/named.conf` 加载成功。 
+    DNS默认会同时启用UDP/TCP的 `port 53`。
+    
+    每次重新启动DNS后，务必检查*/var/log/messages*，出现以上语句表示*/var/named/etc/named.conf*加载成功。 
 
 4. 配置master/slave以及子域DNS：
 
@@ -202,7 +203,7 @@ by leannmak 2015-8-3
     - named.centos.leannmak    #自定义域名`centos.leannmak`的正解zone file
     - named.192.168.182   #域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
 
-    4.2.1 主配置 `named.conf`
+    4.2.1 主配置 *named.conf*
       ```
       $ sudo vim /etc/named.conf 
       1 // named.config
@@ -214,50 +215,50 @@ by leannmak 2015-8-3
       7         memstatistics-file "/var/named/data/named_mem_stats.txt";
       8         allow-query     { any; };
       9         recursion yes;  
-     10         
-     11         allow-transfer  { 192.168.182.16; };    //允许IP为 `192.168.182.16` 的slave进行zone转移
-     12 };      
-     13 
-     14 acl intranet { 192.168.182.0/24; };    //代表 `192.168.182.0/24` IP来源（内网）
-     15 acl internet {! 192.168.182.0/24; any;  };    //代表非 `192.168.182.0/24` IP来源（外网）
-     16 
-     17 view "lan" {
-     18         match-clients { "intranet"; };    //吻合 intranet 来源的使用底下的zone
-     19         
-     20         zone "." IN {
-     21                 type hint;
-     22                 file "named.ca";
-     23         };      
-     24         //正解zone file
-     25         zone "centos.leannmak" IN {
-     26                 type master;
-     27                 file "named.centos.leannmak";
-     28                 allow-transfer  { 192.168.182.16; };
-     29         };      
-     30         //反解zone file
-     31         zone "182.168.192.in-addr.arpa" IN {
-     32                 type master;
-     33                 file "named.192.168.182";
-     34                 allow-transfer  { 192.168.182.16; };
-     35         };      
-     36 };      
-     37 
-     38 view "wan" {
-     39         match-clients { "internet"; };    //吻合 internet 来源使用底下的zone
-     40         
-     41         zone "." IN {
-     42                 type hint;
-     43                 file "named.ca";
-     44         };     
-     45 
-     46         zone "centos.leannmak" IN {
-     47                 type master;
-     48                 file "named.centos.leannmak.inter";
-     49         };
-     50         
-     51         // 由于外网未用到内网的IP，因此IP反解部分可以忽略
-     52 };
-    ```
+      10         
+      11         allow-transfer  { 192.168.182.16; };    //允许IP为 `192.168.182.16` 的slave进行zone转移
+      12 };      
+      13 
+      14 acl intranet { 192.168.182.0/24; };    //代表 `192.168.182.0/24` IP来源（内网）
+      15 acl internet {! 192.168.182.0/24; any;  };    //代表非 `192.168.182.0/24` IP来源（外网）
+      16 
+      17 view "lan" {
+      18         match-clients { "intranet"; };    //吻合 intranet 来源的使用底下的zone
+      19         
+      20         zone "." IN {
+      21                 type hint;
+      22                 file "named.ca";
+      23         };      
+      24         //正解zone file
+      25         zone "centos.leannmak" IN {
+      26                 type master;
+      27                 file "named.centos.leannmak";
+      28                 allow-transfer  { 192.168.182.16; };
+      29         };      
+      30         //反解zone file
+      31         zone "182.168.192.in-addr.arpa" IN {
+      32                 type master;
+      33                 file "named.192.168.182";
+      34                 allow-transfer  { 192.168.182.16; };
+      35         };      
+      36 };      
+      37 
+      38 view "wan" {
+      39         match-clients { "internet"; };    //吻合 internet 来源使用底下的zone
+      40         
+      41         zone "." IN {
+      42                 type hint;
+      43                 file "named.ca";
+      44         };     
+      45 
+      46         zone "centos.leannmak" IN {
+      47                 type master;
+      48                 file "named.centos.leannmak.inter";
+      49         };
+      50         
+      51         // 由于外网未用到内网的IP，因此IP反解部分可以忽略
+      52 };
+      ```
 
     + 第14、15、17、18、36、38-52为DNS的view功能配置，当每台主机上有两张网卡时，可通过view的设置使内外网用户查询得到的IP分离。不需要时直接将这几行内容注释掉即可。
     + 若在此配置了view，请务必同时完成 `named.centos.leannmak.inter` 的配置，详见4.2.4.3。 
