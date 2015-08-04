@@ -61,14 +61,14 @@ $ sudo dig -t ns google.com
 $ sudo dig -t soa google.com
 领域名.  IN  SOA  [Master DNS   Email   Serial   Refresh   Retry   Expire   Minumum TTL]  
 ```
-SOA的七大参数含义：
-  - Master DNS: master服务器主机名。
-  - Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
-  - Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
-  - Refresh: slave向master要求数据更新的频率。
-  - Retry： slave对master联机失败后，重新尝试联机的时间间隔。
-  - Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
-  - Minumum TTL： zone file中每笔记录的默认快取时间。
+  SOA的七大参数含义：
+    - Master DNS: master服务器主机名。
+    - Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
+    - Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
+    - Refresh: slave向master要求数据更新的频率。
+    - Retry： slave对master联机失败后，重新尝试联机的时间间隔。
+    - Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
+    - Minumum TTL： zone file中每笔记录的默认快取时间。
 
 - CNAME ：设定某主机名的别名 (alias)
 ```
