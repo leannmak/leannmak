@@ -3,16 +3,16 @@
 by leannmak 2015-8-3
 
 1. 架设DNS所需要的软件：
-```bash
-$ sudo yum install bind
-$ sudo yum install bind-chroot
-
-$ sudo rpm -qa | grep '^bind'
-bind-libs-9.8.2-0.30.rc1.el6_6.3.x86_64
-bind-chroot-9.8.2-0.30.rc1.el6_6.3.x86_64
-bind-9.8.2-0.30.rc1.el6_6.3.x86_64
-bind-utils-9.8.2-0.30.rc1.el6_6.3.x86_64
-```
+  ```bash
+  $ sudo yum install bind
+  $ sudo yum install bind-chroot
+  
+  $ sudo rpm -qa | grep '^bind'
+  bind-libs-9.8.2-0.30.rc1.el6_6.3.x86_64
+  bind-chroot-9.8.2-0.30.rc1.el6_6.3.x86_64
+  bind-9.8.2-0.30.rc1.el6_6.3.x86_64
+  bind-utils-9.8.2-0.30.rc1.el6_6.3.x86_64
+  ```
 
   * 安装之前可以先用 `rpm` 查看一下，一定要保证以上四个全都有哦。
 
