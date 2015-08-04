@@ -82,17 +82,17 @@ $ sudo dig -t mx google.com
 ```
   number：用于设置优先级，数字越小的上层邮件服务器优先收受信件。
 
-  2.2 反解：通过IP查主机名
+2.2 反解：通过IP查主机名
 
-  ```
-  $ sudo dig -x 216.239.32.10
-  ...
-  ;; ANSWER SECTION:
-  10.32.239.216.in-addr.arpa. 86400 IN    PTR     ns1.google.com.
-  ...
-  ```
+```
+$ sudo dig -x 216.239.32.10
+...
+;; ANSWER SECTION:
+10.32.239.216.in-addr.arpa. 86400 IN    PTR     ns1.google.com.
+...
+```
 
-  - PTR ：查询IP所对应的主机名
+- PTR ：查询IP所对应的主机名
   反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
 
 3. 配置cache-only DNS：
@@ -101,33 +101,33 @@ $ sudo dig -t mx google.com
   * 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
   * 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
 
-    ```
-    $ sudo vim /etc/named.conf
-    // named.conf
-    options {
-            listen-on port 53 { any; };		//可不设定，代表全部接受
-            directory       "/var/named";	//数据库默认目录
-            dump-file       "/var/named/data/cache_dump.db";	//统计信息
-            statistics-file "/var/named/data/named_stats.txt";
-            memstatistics-file "/var/named/data/named_mem_stats.txt";
-            allow-query     { any; };		//可不设定，代表全部接受
-            recursion yes;		//将自己视为客户端的一种查询模式
-            forward only;		//只转发
-            forwarders {		//设置接受转发的上层DNS，IMPORTANT！
-            192.168.182.64; 
-            192.168.182.16;
-            };
-    };
-    ```
+```
+$ sudo vim /etc/named.conf
+// named.conf
+options {
+        listen-on port 53 { any; };		//可不设定，代表全部接受
+        directory       "/var/named";	//数据库默认目录
+        dump-file       "/var/named/data/cache_dump.db";	//统计信息
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query     { any; };		//可不设定，代表全部接受
+        recursion yes;		//将自己视为客户端的一种查询模式
+        forward only;		//只转发
+        forwarders {		//设置接受转发的上层DNS，IMPORTANT！
+        192.168.182.64; 
+        192.168.182.16;
+        };
+};
+```
 
-    - listen-on port 53 { any; };
-      `port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为`localhost`。
+- listen-on port 53 { any; };
+  `port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为`localhost`。
 
-    - directory "/var/named";
-      正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到`/var/named/chroot/var/named/`目录。
+- directory "/var/named";
+  正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到`/var/named/chroot/var/named/`目录。
 
-    - dump-file, statistics-file, memstatistics-file
-      与named服务有关的统计信息记录文档，可不设置。
+- dump-file, statistics-file, memstatistics-file
+  与named服务有关的统计信息记录文档，可不设置。
 
     - allow-query { any; };
       设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对`localhost`开放。
