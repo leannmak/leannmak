@@ -21,8 +21,8 @@ by leannmak 2015-8-3
 **IMPORTANT TIPS**
 - DNS：域名服务器，主要用于域名与IP的管理和解析，目前应用最广的是Berkeley Internet Name Domain, BIND。
 - DNS利用类似树状目录的架构，将主机名的管理分配在不同层级的DNS服务器，每个上一层的DNS所记录的信息，只有其下一层的主机名。
-- 在`.`(root)下有六大一般最上层域名如*.com*，*.org*，*.edu*，*.gov*，*.net*，*.mil*，以及国码最上层域名如*.cn*。
-- 完整主机名FQDN：即**主机名 + 完整域名**， 务必在最后加`.`表示最上层root DNS，如*www.google.com.*。
+- 在 `.` (root)下有六大一般最上层域名如 *.com*，*.org*，*.edu*，*.gov*，*.net*，*.mil*，以及国码最上层域名如 *.cn*。
+- 完整主机名FQDN：即 **主机名 + 完整域名**，务必在最后加 `.` 表示最上层root DNS，如 *www.google.com.*。
 - zone类型：
   + hint： `.` (root)；
   + master： 主DNS，需要手动配置；
@@ -93,7 +93,7 @@ $ sudo dig -x 216.239.32.10
 ```
 
 - PTR ：查询IP所对应的主机名
-  反解的zone必须将IP反过来写，并以`.in-addr.arpa.`结尾。
+  反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
 
 ### 配置cache-only DNS：
 
@@ -101,7 +101,7 @@ $ sudo dig -x 216.239.32.10
 
 2) 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
 
-3) 配置时，只需修改Bind的主配置文件*/etc/named.conf*：
+3) 配置时，只需修改Bind的主配置文件 */etc/named.conf* ：
 
 ```
 $ sudo vim /etc/named.conf
@@ -123,22 +123,22 @@ options {
 ```
 
 - listen-on port 53 { any; };
-  `port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为`localhost`。
+  `port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
 
 - directory "/var/named";
-  正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到*/var/named/chroot/var/named/*目录。
+  正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
 
 - dump-file, statistics-file, memstatistics-file
   与named服务有关的统计信息记录文档，可不设置。
 
 - allow-query { any; };
-  设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对`localhost`开放。
+  设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
 
 - forward only ;
-  表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在`.`的zone file资料也不会使用，是cache only DNS的最常见设定。
+  表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
 
 - forwarders { 192.168.182.64;  192.168.182.16; } ;
-  设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master-slave）关系。
+  设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
 
 4) 配置完成后，启动或重新启动named服务，查看：
 
@@ -165,8 +165,8 @@ Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named
 Aug  4 09:56:03 ceilometer1 named[19141]: running
 ```
 
-- DNS默认会同时启用UDP/TCP的`port 53`。
-- 每次重新启动DNS后，务必检查*/var/log/messages*，出现以上语句表示*/var/named/etc/named.conf*加载成功。 
+- DNS默认会同时启用UDP/TCP的 `port 53` 。
+- 每次重新启动DNS后，务必检查 */var/log/messages* ，出现以上语句表示 */var/named/etc/named.conf* 加载成功。 
 
 ### 配置master/slave以及子域DNS：
 
@@ -199,9 +199,9 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 #### 4.2 master DNS：
 
 重点需要配置三个文件：
-- named.conf    #主配置文件
-- named.centos.leannmak    #自定义域名`centos.leannmak`的正解zone file
-- named.192.168.182   #域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
+- *named.conf*    #主配置文件
+- *named.centos.leannmak*    #自定义域名 `centos.leannmak` 的正解zone file
+- *named.192.168.182*   #域名 `centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
 
 4.2.1 主配置 *named.conf*
 ```
@@ -261,14 +261,14 @@ $ sudo vim /etc/named.conf
 ```
 
 - 第14、15、17、18、36、38-52为DNS的view功能配置，当每台主机上有两张网卡时，可通过view的设置使内外网用户查询得到的IP分离。不需要时直接将这几行内容注释掉即可。
-- 若在此配置了view，请务必同时完成*named.centos.leannmak.inter*的配置，详见4.2.4.3。 
+- 若在此配置了view，请务必同时完成 *named.centos.leannmak.inter* 的配置，详见4.2.4.3。 
 
-4.2.2 正解*named.centos.leannmak*
+4.2.2 正解 *named.centos.leannmak*
 
 ```
 $ sudo vim /var/named/named.centos.leannmak
 $TTL 600
-# 每次更新该文档时请务必加大序列号，此处为2015073104
+# 每次更新该文档时请务必加大序列号，此处为2015073101
 @       IN      SOA     master.centos.leannmak. leannmak.www.centos.leannmak.(
           2015073101 3H 15M 1W 1D)
 
@@ -297,15 +297,14 @@ dns.wiki.centos.leannmak.       IN      A       192.168.182.15
 ```
 
 **IMPORTANT TIPS**
-- `@` 代表zone， 此处`@` = `centos.leannmak.` 。 
+- `@` 代表zone， 此处 `@` = `centos.leannmak.` 。 
 - 正解zone file中描述主机的两种方式：
-    * 使用FQDN ：末尾一定要加 `.` ，否则视为hostname。如 `www.centos.leannmak` ，
-        在此处FQDN将被视为 `www.centos.leannmak.@` = `www.centos.leannmak.centos.leannmak.`；
-    * 使用hostname ：如 `www`，相当于 `www.@` = `www.centos.vbird`。 
+    * 使用FQDN ：末尾一定要加 `.` ，否则视为hostname。如 `www.centos.leannmak` ，在此处FQDN将被视为 `www.centos.leannmak.@` = `www.centos.leannmak.centos.leannmak.` ；
+    * 使用hostname ：如 `www`，相当于 `www.@` = `www.centos.vbird` 。 
 - `;` 或 `#` 为注释符号。
 - 所有设定一定要从行首开始，前面不可有空格符，若有则代表延续前一行。
 
-4.2.3 反解*named.192.168.182*
+4.2.3 反解 *named.192.168.182*
 
 ```
 $ sudo vim /var/named/named.192.168.182
@@ -329,7 +328,7 @@ $TTL    600
 
 4.2.4 其他需要配置的文件
 
-4.2.4.1 防火墙*iptables*
+4.2.4.1 防火墙 *iptables*
 
 ```
 $ sudo vim /etc/sysconfig/iptables
@@ -425,9 +424,9 @@ $ sudo dig -x 192.168.182.16
 #### 4.3 slave DNS：
 
 只需要重点配置一个文件，当然别忘了 `iptables` 和 `resolv.conf` ：
-- named.conf    # 主配置文件
+- *named.conf*    # 主配置文件
 
-4.3.1 主配置*named.conf*
+4.3.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf
 // named.conf
@@ -459,7 +458,7 @@ zone "182.168.192.in-addr.arpa" IN {
 ```
 
 **IMPORTANT TIPS**
-- slave的zone file都是从master取得的，默认放在 `/var/named/slaves` 目录下。
+- slave的zone file都是从master取得的，默认放在 */var/named/slaves* 目录下。
 - 启动named前务必检查zone file的目录权限是否正确，需要与 `named` 这个用户及群组有关：
 ```
 $ sudo ll -d /var/named/slaves
@@ -507,13 +506,13 @@ $ dig -x 192.168.182.64 @127.0.0.1
 #### 4.4 子域DNS
 
 * 子域DNS事实上也就是下层的master，需要有完整的zone相关设定，重点配置三个文件：
-- named.conf    # 主配置文件
-- named.wiki.centos.leannmak    # 子域名 `wiki.centos.leannmak` 的正解zone file
-- named.192.168.182 # 域名 `wiki.centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
+- *named.conf*    # 主配置文件
+- *named.wiki.centos.leannmak*    # 子域名 `wiki.centos.leannmak` 的正解zone file
+- *named.192.168.182*    # 域名 `wiki.centos.leannmak` 对应网段 `192.168.182.0/24` 的反解zone file
 
 * 具体与4.2配置master的详细内容一致，此处只给出参考的配置结果，记得同时修改 `iptables` 和 `resolv.conf`。
 
-4.4.1 主配置*named.conf*
+4.4.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf 
 options {
@@ -541,7 +540,7 @@ zone "182.168.192.in-addr.arpa" IN {
 };
 ```
 
-4.4.2 正解*named.wiki.centos.leannmak*
+4.4.2 正解 *named.wiki.centos.leannmak*
 
 ```
 $ sudo vim /var/named/named.centos.leannmak
@@ -559,7 +558,7 @@ ftp.wiki.centos.leannmak.    IN      CNAME   www.wiki.centos.leannmak.
 forum.wiki.centos.leannmak.  IN      CNAME   www.wiki.centos.leannmak.
 ```
 
-4.4.3 反解*named.192.168.182*
+4.4.3 反解 *named.192.168.182*
 
 ```
 $ sudo vim /var/named/named.192.168.182
