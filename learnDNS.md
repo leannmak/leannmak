@@ -83,88 +83,89 @@ by leannmak 2015-8-3
     ```
     number：用于设置优先级，数字越小的上层邮件服务器优先收受信件。
 
-2.2 反解：通过IP查主机名
+  2.2 反解：通过IP查主机名
 
-```
-$ sudo dig -x 216.239.32.10
-...
-;; ANSWER SECTION:
-10.32.239.216.in-addr.arpa. 86400 IN    PTR     ns1.google.com.
-...
-```
+  ```
+  $ sudo dig -x 216.239.32.10
+  ...
+  ;; ANSWER SECTION:
+  10.32.239.216.in-addr.arpa. 86400 IN    PTR     ns1.google.com.
+  ...
+  ```
 
-- PTR ：查询IP所对应的主机名
-反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
+  - PTR ：查询IP所对应的主机名
+  反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
 
 3. 配置cache-only DNS：
 
-* cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
-* 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
-* 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
+  * cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
+  * 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
+  * 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
 
-```
-$ sudo vim /etc/named.conf
-// named.conf
-options {
-        listen-on port 53 { any; };		//可不设定，代表全部接受
-        directory       "/var/named";	//数据库默认目录
-        dump-file       "/var/named/data/cache_dump.db";	//统计信息
-        statistics-file "/var/named/data/named_stats.txt";
-        memstatistics-file "/var/named/data/named_mem_stats.txt";
-        allow-query     { any; };		//可不设定，代表全部接受
-        recursion yes;		//将自己视为客户端的一种查询模式
-        forward only;		//只转发
-        forwarders {		//设置接受转发的上层DNS，IMPORTANT！
-        192.168.182.64; 
-        192.168.182.16;
-        };
-};
-```
+  ```
+  $ sudo vim /etc/named.conf
+  // named.conf
+  options {
+          listen-on port 53 { any; };		//可不设定，代表全部接受
+          directory       "/var/named";	//数据库默认目录
+          dump-file       "/var/named/data/cache_dump.db";	//统计信息
+          statistics-file "/var/named/data/named_stats.txt";
+          memstatistics-file "/var/named/data/named_mem_stats.txt";
+          allow-query     { any; };		//可不设定，代表全部接受
+          recursion yes;		//将自己视为客户端的一种查询模式
+          forward only;		//只转发
+          forwarders {		//设置接受转发的上层DNS，IMPORTANT！
+          192.168.182.64; 
+          192.168.182.16;
+          };
+  };
+  ```
 
-- listen-on port 53 { any; };
+  - listen-on port 53 { any; };
     `port 53` 是DNS默认端口，设为 `any` 时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
 
-- directory "/var/named";
+  - directory "/var/named";
     正、反解的 zone file 预设目录。由于 chroot 的关系，最终这些文件会被主动链接到 `/var/named/chroot/var/named/` 目录。
 
-- dump-file, statistics-file, memstatistics-file
+  - dump-file, statistics-file, memstatistics-file
     与 named 服务有关的统计信息记录文档，可不设置。
 
-- allow-query { any; };
+  - allow-query { any; };
     设定有权对本机 DNS 服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
 
-- forward only ;
+  - forward only ;
     表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的 zone file 资料也不会使用， 是 cache only DNS 的最常见设定。
 
-- forwarders { 192.168.182.64;  192.168.182.16; } ;
+  - forwarders { 192.168.182.64;  192.168.182.16; } ;
     设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master-slave）关系。
 
-* 配置完成后，启动或重新启动named服务，查看：
+  * 配置完成后，启动或重新启动named服务，查看：
 
-```
-$ sudo service named start
-$ sudo chkconfig named on
+  ```
+  $ sudo service named start
+  $ sudo chkconfig named on
 
-$ sudo netstat -utlnp | grep named
-tcp        0      0 192.168.182.14:53           0.0.0.0:*                   LISTEN      19141/named         
-tcp        0      0 10.0.100.14:53              0.0.0.0:*                   LISTEN      19141/named         
-tcp        0      0 127.0.0.1:53                0.0.0.0:*                   LISTEN      19141/named         
-tcp        0      0 127.0.0.1:953               0.0.0.0:*                   LISTEN      19141/named         
-tcp        0      0 ::1:953                     :::*                        LISTEN      19141/named         
-udp        0      0 192.168.122.1:53            0.0.0.0:*                               19141/named         
-udp        0      0 192.168.182.14:53           0.0.0.0:*                               19141/named         
-udp        0      0 10.0.100.14:53              0.0.0.0:*                               19141/named         
-udp        0      0 127.0.0.1:53                0.0.0.0:*                               19141/named        
+  $ sudo netstat -utlnp | grep named
+  tcp        0      0 192.168.182.14:53           0.0.0.0:*                   LISTEN      19141/named         
+  tcp        0      0 10.0.100.14:53              0.0.0.0:*                   LISTEN      19141/named         
+  tcp        0      0 127.0.0.1:53                0.0.0.0:*                   LISTEN      19141/named         
+  tcp        0      0 127.0.0.1:953               0.0.0.0:*                   LISTEN      19141/named         
+  tcp        0      0 ::1:953                     :::*                        LISTEN      19141/named         
+  udp        0      0 192.168.122.1:53            0.0.0.0:*                               19141/named         
+  udp        0      0 192.168.182.14:53           0.0.0.0:*                               19141/named         
+  udp        0      0 10.0.100.14:53              0.0.0.0:*                               19141/named         
+  udp        0      0 127.0.0.1:53                0.0.0.0:*                               19141/named        
 
-$ sudo tail -n 30 /var/log/messages | grep named    
-Aug  4 09:56:03 ceilometer1 named[19141]: starting BIND 9.8.2rc1-RedHat-9.8.2-0.30.rc1.el6_6.3 -u named -t /var/named/chroot
-...
-Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named.conf'
-...
-Aug  4 09:56:03 ceilometer1 named[19141]: running
-```
-- DNS默认会同时启用UDP/TCP的 `port 53`。
-- 每次重新启动DNS后，务必检查 `/var/log/messages` ，出现以上语句表示 `/var/named/etc/named.conf` 加载成功。 
+  $ sudo tail -n 30 /var/log/messages | grep named    
+  Aug  4 09:56:03 ceilometer1 named[19141]: starting BIND 9.8.2rc1-RedHat-9.8.2-0.30.rc1.el6_6.3 -u named -t /var/named/chroot
+  ...
+  Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named.conf'
+  ...
+  Aug  4 09:56:03 ceilometer1 named[19141]: running
+  ```
+
+  - DNS默认会同时启用UDP/TCP的 `port 53`。
+  - 每次重新启动DNS后，务必检查 `/var/log/messages` ，出现以上语句表示 `/var/named/etc/named.conf` 加载成功。 
 
 4. 配置master/slave以及子域DNS：
 
