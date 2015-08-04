@@ -95,11 +95,11 @@ $ sudo dig -x 216.239.32.10
 - PTR ：查询IP所对应的主机名
   反解的zone必须将IP反过来写，并以 `.in-addr.arpa.` 结尾。
 
-3. 配置cache-only DNS：
+### 配置cache-only DNS：
 
-  * cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
-  * 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
-  * 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
+* cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
+* 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
+* 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
 
 ```
 $ sudo vim /etc/named.conf
@@ -129,84 +129,83 @@ options {
 - dump-file, statistics-file, memstatistics-file
   与named服务有关的统计信息记录文档，可不设置。
 
-    - allow-query { any; };
-      设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对`localhost`开放。
+- allow-query { any; };
+  设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对`localhost`开放。
 
-    - forward only ;
-      表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在`.`的zone file资料也不会使用，是cache only DNS的最常见设定。
+- forward only ;
+  表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在`.`的zone file资料也不会使用，是cache only DNS的最常见设定。
 
-    - forwarders { 192.168.182.64;  192.168.182.16; } ;
-      设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master-slave）关系。
+- forwarders { 192.168.182.64;  192.168.182.16; } ;
+  设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master-slave）关系。
 
-  * 配置完成后，启动或重新启动named服务，查看：
+* 配置完成后，启动或重新启动named服务，查看：
 
-    ```
-    $ sudo service named start
-    $ sudo chkconfig named on
+```
+$ sudo service named start
+$ sudo chkconfig named on
 
-    $ sudo netstat -utlnp | grep named
-    tcp        0      0 192.168.182.14:53           0.0.0.0:*                   LISTEN      19141/named         
-    tcp        0      0 10.0.100.14:53              0.0.0.0:*                   LISTEN      19141/named         
-    tcp        0      0 127.0.0.1:53                0.0.0.0:*                   LISTEN      19141/named         
-    tcp        0      0 127.0.0.1:953               0.0.0.0:*                   LISTEN      19141/named         
-    tcp        0      0 ::1:953                     :::*                        LISTEN      19141/named         
-    udp        0      0 192.168.122.1:53            0.0.0.0:*                               19141/named         
-    udp        0      0 192.168.182.14:53           0.0.0.0:*                               19141/named         
-    udp        0      0 10.0.100.14:53              0.0.0.0:*                               19141/named         
-    udp        0      0 127.0.0.1:53                0.0.0.0:*                               19141/named        
+$ sudo netstat -utlnp | grep named
+tcp        0      0 192.168.182.14:53           0.0.0.0:*                   LISTEN      19141/named         
+tcp        0      0 10.0.100.14:53              0.0.0.0:*                   LISTEN      19141/named         
+tcp        0      0 127.0.0.1:53                0.0.0.0:*                   LISTEN      19141/named         
+tcp        0      0 127.0.0.1:953               0.0.0.0:*                   LISTEN      19141/named         
+tcp        0      0 ::1:953                     :::*                        LISTEN      19141/named         
+udp        0      0 192.168.122.1:53            0.0.0.0:*                               19141/named         
+udp        0      0 192.168.182.14:53           0.0.0.0:*                               19141/named         
+udp        0      0 10.0.100.14:53              0.0.0.0:*                               19141/named         
+udp        0      0 127.0.0.1:53                0.0.0.0:*                               19141/named        
 
-    $ sudo tail -n 30 /var/log/messages | grep named    
-    Aug  4 09:56:03 ceilometer1 named[19141]: starting BIND 9.8.2rc1-RedHat-9.8.2-0.30.rc1.el6_6.3 -u named -t /var/named/chroot
-    ...
-    Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named.conf'
-    ...
-    Aug  4 09:56:03 ceilometer1 named[19141]: running
-    ```
+$ sudo tail -n 30 /var/log/messages | grep named    
+Aug  4 09:56:03 ceilometer1 named[19141]: starting BIND 9.8.2rc1-RedHat-9.8.2-0.30.rc1.el6_6.3 -u named -t /var/named/chroot
+...
+Aug  4 09:56:03 ceilometer1 named[19141]: loading configuration from '/etc/named.conf'
+...
+Aug  4 09:56:03 ceilometer1 named[19141]: running
+```
 
-    DNS默认会同时启用UDP/TCP的 `port 53`。
-    
-    每次重新启动DNS后，务必检查*/var/log/messages*，出现以上语句表示*/var/named/etc/named.conf*加载成功。 
+- DNS默认会同时启用UDP/TCP的 `port 53`。
+- 每次重新启动DNS后，务必检查*/var/log/messages*，出现以上语句表示*/var/named/etc/named.conf*加载成功。 
 
-4. 配置master/slave以及子域DNS：
+### 配置master/slave以及子域DNS：
 
-  4.1 架构规划如下：
-  + master DNS : 
-    - eth0 ：10.0.100.64	(对外)
-    - eth1 ：192.168.182.64	(对内)
-    - 主机名与RR标志 ：
-      * master.centos.leannmak (NS, A)
-      * www.centos.leannmak (A)
-      * linux.centos.leannmak (CNAME)
-      * ftp.centos.leannmak (CNAME)
-      * forum.centos.leannmak (CNAME)
-      * www.centos.leannmak (MX)
-  + slave DNS ：
-    - IP ：192.168.182.16
-    - 主机名与RR标志 ：
-      * slave.centos.leannmak (NS, A)
-      * clientlinux.centos.leannmak(A)
-  + 子域DNS ： 
-    - IP ：192.168.182.15
-    - 主机名与RR标志 ：
-      * master.wiki.centos.leannmak (NS, A)
-      * www.wiki.centos.leannmak (A)
-      * linux.wiki.centos.leannmak (CNAME)
-      * ftp.wiki.centos.leannmak (CNAME)
-      * forum.wiki.centos.leannmak (CNAME)
-      * www.wiki.centos.leannmak (MX)
+4.1 架构规划如下：
++ master DNS : 
+  - eth0 ：10.0.100.64	(对外)
+  - eth1 ：192.168.182.64	(对内)
+  - 主机名与RR标志 ：
+    * master.centos.leannmak (NS, A)
+    * www.centos.leannmak (A)
+    * linux.centos.leannmak (CNAME)
+    * ftp.centos.leannmak (CNAME)
+    * forum.centos.leannmak (CNAME)
+    * www.centos.leannmak (MX)
++ slave DNS ：
+  - IP ：192.168.182.16
+  - 主机名与RR标志 ：
+    * slave.centos.leannmak (NS, A)
+    * clientlinux.centos.leannmak(A)
++ 子域DNS ： 
+  - IP ：192.168.182.15
+  - 主机名与RR标志 ：
+    * master.wiki.centos.leannmak (NS, A)
+    * www.wiki.centos.leannmak (A)
+    * linux.wiki.centos.leannmak (CNAME)
+    * ftp.wiki.centos.leannmak (CNAME)
+    * forum.wiki.centos.leannmak (CNAME)
+    * www.wiki.centos.leannmak (MX)
 
-  4.2 master DNS：
+4.2 master DNS：
 
-    重点需要配置三个文件：
-    - named.conf    #主配置文件
-    - named.centos.leannmak    #自定义域名`centos.leannmak`的正解zone file
-    - named.192.168.182   #域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
+重点需要配置三个文件：
+- named.conf    #主配置文件
+- named.centos.leannmak    #自定义域名`centos.leannmak`的正解zone file
+- named.192.168.182   #域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
 
-    4.2.1 主配置 *named.conf*
-      ```
-      $ sudo vim /etc/named.conf 
-      1 // named.config
-      2 
+4.2.1 主配置 *named.conf*
+```
+$ sudo vim /etc/named.conf 
+1 // named.config
+2 
       3 options {
       4         directory       "/var/named";
       5         dump-file       "/var/named/data/cache_dump.db";
