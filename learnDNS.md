@@ -180,32 +180,32 @@ by leannmak 2015-8-3
       * ftp.centos.leannmak (CNAME)
       * forum.centos.leannmak (CNAME)
       * www.centos.leannmak (MX)
-+ slave DNS ：
-- IP ：192.168.182.16
-- 主机名与RR标志 ：
-    * slave.centos.leannmak (NS, A)
-    * clientlinux.centos.leannmak(A)
-+ 子域DNS ： 
-- IP ：192.168.182.15
-- 主机名与RR标志 ：
-    * master.wiki.centos.leannmak (NS, A)
-    * www.wiki.centos.leannmak (A)
-    * linux.wiki.centos.leannmak (CNAME)
-    * ftp.wiki.centos.leannmak (CNAME)
-    * forum.wiki.centos.leannmak (CNAME)
-    * www.wiki.centos.leannmak (MX)
+  + slave DNS ：
+    - IP ：192.168.182.16
+    - 主机名与RR标志 ：
+      * slave.centos.leannmak (NS, A)
+      * clientlinux.centos.leannmak(A)
+  + 子域DNS ： 
+    - IP ：192.168.182.15
+    - 主机名与RR标志 ：
+      * master.wiki.centos.leannmak (NS, A)
+      * www.wiki.centos.leannmak (A)
+      * linux.wiki.centos.leannmak (CNAME)
+      * ftp.wiki.centos.leannmak (CNAME)
+      * forum.wiki.centos.leannmak (CNAME)
+      * www.wiki.centos.leannmak (MX)
 
-4.2 master DNS：
+  4.2 master DNS：
 
-重点需要配置三个文件：
-- named.conf    # 主配置文件
-- named.centos.leannmak    # 自定义域名`centos.leannmak`的正解zone file
-- named.192.168.182 # 域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
+    重点需要配置三个文件：
+    - named.conf    # 主配置文件
+    - named.centos.leannmak    # 自定义域名`centos.leannmak`的正解zone file
+    - named.192.168.182 # 域名`centos.leannmak`对应网段`192.168.182.0/24`的反解zone file
 
-4.2.1 主配置 `named.conf`
-```
-$ sudo vim /etc/named.conf 
-  1 // named.config
+    4.2.1 主配置 `named.conf`
+      ```
+      $ sudo vim /etc/named.conf 
+      1 // named.config
   2 
   3 options {
   4         directory       "/var/named";
