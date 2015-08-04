@@ -97,9 +97,9 @@ $ sudo dig -x 216.239.32.10
 
 ### 配置cache-only DNS：
 
-* cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
-* 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
-* 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
+1) cache-only也就是快取DNS，只保留DNS的转发功能forwarding，而不做具体查询。
+2) 为了系统安全，一般会在防火墙主机上加装一个cache-only的DNS服务。
+3) 配置时，只需修改Bind的主配置文件 `/etc/named.conf` ：
 
 ```
 $ sudo vim /etc/named.conf
@@ -138,7 +138,7 @@ options {
 - forwarders { 192.168.182.64;  192.168.182.16; } ;
   设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master-slave）关系。
 
-* 配置完成后，启动或重新启动named服务，查看：
+4) 配置完成后，启动或重新启动named服务，查看：
 
 ```
 $ sudo service named start
@@ -204,95 +204,95 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 4.2.1 主配置 *named.conf*
 ```
 $ sudo vim /etc/named.conf 
-1 // named.config
-2 
-      3 options {
-      4         directory       "/var/named";
-      5         dump-file       "/var/named/data/cache_dump.db";
-      6         statistics-file "/var/named/data/named_stats.txt";
-      7         memstatistics-file "/var/named/data/named_mem_stats.txt";
-      8         allow-query     { any; };
-      9         recursion yes;  
-      10         
-      11         allow-transfer  { 192.168.182.16; };    //允许IP为 `192.168.182.16` 的slave进行zone转移
-      12 };      
-      13 
-      14 acl intranet { 192.168.182.0/24; };    //代表 `192.168.182.0/24` IP来源（内网）
-      15 acl internet {! 192.168.182.0/24; any;  };    //代表非 `192.168.182.0/24` IP来源（外网）
-      16 
-      17 view "lan" {
-      18         match-clients { "intranet"; };    //吻合 intranet 来源的使用底下的zone
-      19         
-      20         zone "." IN {
-      21                 type hint;
-      22                 file "named.ca";
-      23         };      
-      24         //正解zone file
-      25         zone "centos.leannmak" IN {
-      26                 type master;
-      27                 file "named.centos.leannmak";
-      28                 allow-transfer  { 192.168.182.16; };
-      29         };      
-      30         //反解zone file
-      31         zone "182.168.192.in-addr.arpa" IN {
-      32                 type master;
-      33                 file "named.192.168.182";
-      34                 allow-transfer  { 192.168.182.16; };
-      35         };      
-      36 };      
-      37 
-      38 view "wan" {
-      39         match-clients { "internet"; };    //吻合 internet 来源使用底下的zone
-      40         
-      41         zone "." IN {
-      42                 type hint;
-      43                 file "named.ca";
-      44         };     
-      45 
-      46         zone "centos.leannmak" IN {
-      47                 type master;
-      48                 file "named.centos.leannmak.inter";
-      49         };
-      50         
-      51         // 由于外网未用到内网的IP，因此IP反解部分可以忽略
-      52 };
-      ```
+ 1 // named.config
+ 2 
+ 3 options {
+ 4         directory       "/var/named";
+ 5         dump-file       "/var/named/data/cache_dump.db";
+ 6         statistics-file "/var/named/data/named_stats.txt";
+ 7         memstatistics-file "/var/named/data/named_mem_stats.txt";
+ 8         allow-query     { any; };
+ 9         recursion yes;  
+10         
+11         allow-transfer  { 192.168.182.16; };    //允许IP为 `192.168.182.16` 的slave进行zone转移
+12 };      
+13 
+14 acl intranet { 192.168.182.0/24; };    //代表 `192.168.182.0/24` IP来源（内网）
+15 acl internet {! 192.168.182.0/24; any;  };    //代表非 `192.168.182.0/24` IP来源（外网）
+16 
+17 view "lan" {
+18         match-clients { "intranet"; };    //吻合 intranet 来源的使用底下的zone
+19         
+20         zone "." IN {
+21                 type hint;
+22                 file "named.ca";
+23         };      
+24         //正解zone file
+25         zone "centos.leannmak" IN {
+26                 type master;
+27                 file "named.centos.leannmak";
+28                 allow-transfer  { 192.168.182.16; };
+29         };      
+30         //反解zone file
+31         zone "182.168.192.in-addr.arpa" IN {
+32                 type master;
+33                 file "named.192.168.182";
+34                 allow-transfer  { 192.168.182.16; };
+35         };      
+36 };      
+37 
+38 view "wan" {
+39         match-clients { "internet"; };    //吻合 internet 来源使用底下的zone
+40         
+41         zone "." IN {
+42                 type hint;
+43                 file "named.ca";
+44         };     
+45
+46         zone "centos.leannmak" IN {
+47                 type master;
+48                 file "named.centos.leannmak.inter";
+49         };
+50         
+51         // 由于外网未用到内网的IP，因此IP反解部分可以忽略
+52 };
+```
 
-    + 第14、15、17、18、36、38-52为DNS的view功能配置，当每台主机上有两张网卡时，可通过view的设置使内外网用户查询得到的IP分离。不需要时直接将这几行内容注释掉即可。
-    + 若在此配置了view，请务必同时完成 `named.centos.leannmak.inter` 的配置，详见4.2.4.3。 
+- 第14、15、17、18、36、38-52为DNS的view功能配置，当每台主机上有两张网卡时，可通过view的设置使内外网用户查询得到的IP分离。不需要时直接将这几行内容注释掉即可。
+- 若在此配置了view，请务必同时完成 `named.centos.leannmak.inter` 的配置，详见4.2.4.3。 
 
-    4.2.2 正解 named.centos.leannmak
+4.2.2 正解 named.centos.leannmak
 
-      ```
-      $ sudo vim /var/named/named.centos.leannmak
-      $TTL 600
-      # 每次更新该文档时请务必加大序列号，此处为2015073104
-      @       IN      SOA     master.centos.leannmak. leannmak.www.centos.leannmak.(
-              2015073101 3H 15M 1W 1D)
+```
+$ sudo vim /var/named/named.centos.leannmak
+$TTL 600
+# 每次更新该文档时请务必加大序列号，此处为2015073104
+@       IN      SOA     master.centos.leannmak. leannmak.www.centos.leannmak.(
+          2015073101 3H 15M 1W 1D)
 
-      # 针对master的NS和A设定
-      @       IN      NS      master.centos.leannmak.
-      master.centos.leannmak. IN      A       192.168.182.64
-      
-      # 针对slave的NS和A设定
-      @       IN      NS      slave.centos.leannmak.
-      slave.centos.leannmak.  IN      A       192.168.182.16
-      @       IN      MX      10      www.centos.leannmak.
+# 针对master的NS和A设定
+@       IN      NS      master.centos.leannmak.
+master.centos.leannmak. IN      A       192.168.182.64
 
-      # 针对master的所有相关正解设定
-      www.centos.leannmak.    IN      A       192.168.182.64
-      linux.centos.leannmak.  IN      CNAME   www.centos.leannmak.
-      ftp.centos.leannmak.    IN      CNAME   www.centos.leannmak.
-      forum.centos.leannmak.  IN      CNAME   www.centos.leannmak.
-      
-      # 针对slave的A设定
-      slave.centos.leannmak.  IN      A       192.168.182.16
-      clientlinux.centos.leannmak.    IN      A       192.168.182.16
-      
-      # 针对子域的NS和A设定
-      wiki.centos.leannmak.   IN      Ns      dns.wiki.centos.leannmak.
-      dns.wiki.centos.leannmak.       IN      A       192.168.182.15
-      ```
+# 针对slave的NS和A设定
+@       IN      NS      slave.centos.leannmak.
+slave.centos.leannmak.  IN      A       192.168.182.16
+@       IN      MX      10      www.centos.leannmak.
+
+# 针对master的所有相关正解设定
+www.centos.leannmak.    IN      A       192.168.182.64
+linux.centos.leannmak.  IN      CNAME   www.centos.leannmak.
+ftp.centos.leannmak.    IN      CNAME   www.centos.leannmak.
+forum.centos.leannmak.  IN      CNAME   www.centos.leannmak.
+
+# 针对slave的A设定
+slave.centos.leannmak.  IN      A       192.168.182.16
+clientlinux.centos.leannmak.    IN      A       192.168.182.16
+
+# 针对子域的NS和A设定
+wiki.centos.leannmak.   IN      Ns      dns.wiki.centos.leannmak.
+dns.wiki.centos.leannmak.       IN      A       192.168.182.15
+```
 
 **IMPORTANT TIPS**
 - `@` 代表zone， 此处`@` = `centos.leannmak.` 。 
