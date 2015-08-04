@@ -31,57 +31,57 @@ by leannmak 2015-8-3
 
 2.1 正解：通过主机名查IP
 
-    ```
-    $ sudo dig www.google.com
-    ...
-    ;; ANSWER SECTION:
-    www.google.com.         59      IN      A       216.58.221.132
-    ;; AUTHORITY SECTION:
-    google.com.             8981    IN      NS      ns1.google.com.
-    ...
-    ```
+```
+$ sudo dig www.google.com
+...
+;; ANSWER SECTION:
+www.google.com.         59      IN      A       216.58.221.132
+;; AUTHORITY SECTION:
+google.com.             8981    IN      NS      ns1.google.com.
+...
+```
 
-    **RR标志说明**：
+**RR标志说明**：
 
-    - A, AAAA ：查询 IP 的记录
-    ```
-    $ sudo dig www.google.com
-    主机名.   IN  A           IPv4 的 IP 地址
-    主机名.   IN  AAAA        IPv6 的 IP 地址
-    ```
+- A, AAAA ：查询 IP 的记录
+```
+$ sudo dig www.google.com
+主机名.   IN  A           IPv4 的 IP 地址
+主机名.   IN  AAAA        IPv6 的 IP 地址
+```
 
-    - NS ：查询管理领域名 (zone) 的服务器主机名
-    ```
-    $ sudo dig -t ns google.com
-    领域名.   IN  NS          管理这个领域名的服务器主机名字.
-    ```
+- NS ：查询管理领域名 (zone) 的服务器主机名
+```
+$ sudo dig -t ns google.com
+领域名.   IN  NS          管理这个领域名的服务器主机名字.
+```
 
-    - SOA ：查询管理领域名的服务器管理信息
-    ```
-    $ sudo dig -t soa google.com
-    领域名.  IN  SOA  [Master DNS   Email   Serial   Refresh   Retry   Expire   Minumum TTL]  
-    ```
-    SOA的七大参数含义：
-      - Master DNS: master服务器主机名。
-      - Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
-      - Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
-      - Refresh: slave向master要求数据更新的频率。
-      - Retry： slave对master联机失败后，重新尝试联机的时间间隔。
-      - Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
-      - Minumum TTL： zone file中每笔记录的默认快取时间。
+- SOA ：查询管理领域名的服务器管理信息
+```
+$ sudo dig -t soa google.com
+领域名.  IN  SOA  [Master DNS   Email   Serial   Refresh   Retry   Expire   Minumum TTL]  
+```
+SOA的七大参数含义：
+  - Master DNS: master服务器主机名。
+  - Email： 管理员邮箱，由于 `@` 字符在zone file里有特殊定义，一般用 `.` 替换。
+  - Serial： zone file的新旧标志，越大代表越新。 slave DNS将据此判断是否主动从master下载新的zone file。每次修改zone file请务必加大该序列号，此时master重启DNS后会主动告知slave更新。
+  - Refresh: slave向master要求数据更新的频率。
+  - Retry： slave对master联机失败后，重新尝试联机的时间间隔。
+  - Expire: slave对master联机失败时的尝试联机失效时间，超时后slave不再尝试更新，并将删除该次下载的zone file。
+  - Minumum TTL： zone file中每笔记录的默认快取时间。
 
-    - CNAME ：设定某主机名的别名 (alias)
-    ```
-    $ sudo dig www.google.com
-    主机别名.   IN  CNAME       实际代表这个主机别名的主机名字.
-    ```
+- CNAME ：设定某主机名的别名 (alias)
+```
+$ sudo dig www.google.com
+主机别名.   IN  CNAME       实际代表这个主机别名的主机名字.
+```
 
-    - MX ：查询某领域名的邮件服务器主机名
-    ```
-    $ sudo dig -t mx google.com
-    领域名.   IN  MX          number  接收邮件的服务器主机名字
-    ```
-    number：用于设置优先级，数字越小的上层邮件服务器优先收受信件。
+- MX ：查询某领域名的邮件服务器主机名
+```
+$ sudo dig -t mx google.com
+领域名.   IN  MX          number  接收邮件的服务器主机名字
+```
+  number：用于设置优先级，数字越小的上层邮件服务器优先收受信件。
 
   2.2 反解：通过IP查主机名
 
