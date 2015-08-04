@@ -136,27 +136,27 @@ options {
 
 (1) listen-on port 53 { any; };
 
-`port 53`是DNS默认端口，设为`any`时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
+  `port 53`是DNS默认端口，设为 `any` 时表示对整个主机系统的所有网络接口进行监听，可根据需要自行修改IP，默认一般为 `localhost` 。
 
 (2) directory "/var/named";
 
-正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
+  正、反解的zone file预设目录。由于chroot的关系，最终这些文件会被主动链接到 */var/named/chroot/var/named/* 目录。
 
 (3) dump-file, statistics-file, memstatistics-file
 
-与named服务有关的统计信息记录文档，可不设置。
+  与named服务有关的统计信息记录文档，可不设置。
 
 (4) allow-query { any; };
 
-设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
+  设定有权对本机DNS服务提出查询请求的客户端，需要同时开放防火墙。预设只对 `localhost` 开放。
 
 (5) forward only ;
 
-表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
+  表示当前DNS服务器仅进行forwarding，将查询权交给上层DNS，即使存在 `.` 的zone file资料也不会使用，是cache only DNS的最常见设定。
 
 (6) forwarders { 192.168.182.64;  192.168.182.16; } ;
 
-设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
+  设定接受forwarding的上层DNS，考虑到上层DNS可能会挂点，因此设定时建议添加多部上层DNS，这些DNS一般为主从（master/slave）关系。
 
 
 * 配置完成后，启动或重新启动named服务，查看：
@@ -192,7 +192,7 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
 ### 4 配置master/slave以及子域DNS
 
 #### 4.1 架构规划：
-+ master DNS : 
++ **master DNS** : 
   - eth0 ：10.0.100.64	(对外)
   - eth1 ：192.168.182.64	(对内)
   - 主机名与RR标志 ：
@@ -202,12 +202,12 @@ Aug  4 09:56:03 ceilometer1 named[19141]: running
     * ftp.centos.leannmak (CNAME)
     * forum.centos.leannmak (CNAME)
     * www.centos.leannmak (MX)
-+ slave DNS ：
++ **slave DNS** ：
   - IP ：192.168.182.16
   - 主机名与RR标志 ：
     * slave.centos.leannmak (NS, A)
     * clientlinux.centos.leannmak(A)
-+ 子域DNS ： 
++ **子域DNS** ： 
   - IP ：192.168.182.15
   - 主机名与RR标志 ：
     * master.wiki.centos.leannmak (NS, A)
