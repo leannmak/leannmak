@@ -360,7 +360,7 @@ $TTL    600
 ```
 $ sudo vim /etc/sysconfig/iptables
 ...
-# `eth0` 为外网接口 `10.0.100.64`
+# eth0 为外网接口 10.0.100.64
 -A INPUT -p UDP -i eth0 --dport  53  --sport 1024:65534 -j ACCEPT
 -A INPUT -p TCP -i eth0 --dport  53  --sport 1024:65534 -j ACCEPT
 ...
@@ -626,4 +626,4 @@ www.wiki.centos.leannmak. 600   IN      A       192.168.182.15
 ...
 ```
 
-参考文件：http://vbird.dic.ksu.edu.tw/linux_server/0350dns.php
+参考文献：http://vbird.dic.ksu.edu.tw/linux_server/0350dns.php
