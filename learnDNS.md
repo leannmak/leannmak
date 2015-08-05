@@ -451,7 +451,7 @@ $ sudo dig -x 192.168.182.16
 #### 4.3 slave DNS：
 
 只需要重点配置一个文件，当然别忘了 `iptables` 和 `resolv.conf` ：
-- *named.conf*    # 主配置文件
+- `named.conf`    # 主配置文件
 
 
 ##### 4.3.1 主配置 *named.conf*
