@@ -1,4 +1,4 @@
-# Load Balance 学习笔记
+# Load Balancing 学习笔记
 
 by leannmak 2015-8-6
 
