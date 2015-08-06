@@ -2,7 +2,7 @@
 
 by leannmak 2015-8-6
 
-## 1. LVS 与 Keepalived 安装（Centos 6.5）：
+## 1. LVS 与 Keepalived 安装
 ### 1.1 下载 LVS 与 Keepalived 软件包
 ```bash
 # 懒得创建新目录，就跟这儿放着了
@@ -18,7 +18,6 @@ $ sudo wget http://www.keepalived.org/software/keepalived-1.2.1.tar.gz
 ### 1.2 安装 LVS 与 Keepalived 软件包
 
 #### 1.2.1 LVS
-
 --------------------------------- 不想踩雷必看 ---------------------------------
 
 编译LVS之前要先做个目录的 **软链接**，否则会报错，IMPORTANT！
@@ -35,7 +34,7 @@ $ sudo ln -s /usr/src/kernels/2.6.32-504.8.1.el6.x86_64/  /usr/src/linux
 $ sudo ll /usr/src/linux
 lrwxrwxrwx. 1 root root 44 Aug  6 10:34 /usr/src/linux -> /usr/src/kernels/2.6.32-504.8.1.el6.x86_64/
 ```
-BUT，蛋疼的是， `ll` 之后你很有可能会发现 `->` 后头内一溜简直闪瞎眼。Why? 当然是因为链过去的目标目录不存在啦。
+BUT，蛋疼的是， `ll` 之后你很有可能会发现 `->` 后头内一溜简直闪瞎眼。Why? 当然是因为被链的目标目录不存在咯。
 
 NOW，不想死就 pls follow me =.=
 ```
@@ -73,7 +72,6 @@ $ sudo find / -name ipvsadm
 如果还报错————对不起，上帝也看你不顺眼，请自查下RP。
 
 #### 1.2.2 Keepalived
-
 ```
 $ sudo cd /usr/src/
 $ sudo tar zxvf keepalived-1.2.1.tar.gz
