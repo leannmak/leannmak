@@ -29,3 +29,10 @@ hello world
 安装成功！
 
 可通过 exit 命令或 Ctrl+d 来退出终端时，终止所创建的容器。
+
+## 2. Docker创建
+'''
+$ sudo docker run -idt --name="lvs-vip" rhel6.5
+$ sudo docker ps
+$ sudo docker attach lvs-vip
+'''
