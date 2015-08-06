@@ -37,9 +37,9 @@ lrwxrwxrwx. 1 root root 44 Aug  6 10:34 /usr/src/linux -> /usr/src/kernels/2.6.3
 ```
 BUT，蛋疼的是， `ll` 之后你很有可能会发现 `->` 后头内一溜简直闪瞎眼。Why? 当然是因为链过去的目标目录不存在啦。
 
-NOW, 不想死就 pls follow me =.=
+NOW，不想死就 pls follow me =.=
 ```
-# 首先查一下 *kernels* 目录下是什么鬼
+# 首先检查一下kernels目录下是什么鬼
 $ sudo ll /usr/src/kernels
 drwxr-xr-x. 22 root root 4096 Jun  2 23:11 *2.6.32-504.16.2.el6.x86_64*
 
@@ -51,11 +51,11 @@ $ ln -s /usr/src/kernels/2.6.32-504.16.2.el6.x86_64/  /usr/src/linux
 $ ll /usr/src/linux
 lrwxrwxrwx. 1 root root 44 Aug  6 10:34 /usr/src/linux -> /usr/src/kernels/2.6.32-504.16.2.el6.x86_64/
 ```
-Good! Now it's not shining. DONE！
+Good! Now it's not shining. DONE!
 
 接下来就可以愉快地开始编译安装了！请叫我红领巾！
 
----------------------------------- 雷区分界线 ----------------------------------
+---------------------------------- 雷区END分界线 --------------------------------
 
 开始安装LVS：
 ```
@@ -110,7 +110,7 @@ $ sudo yum install popt-devel
 ```
 完成后再 `./configure` 一下。再遇到问题请自行解决，不要让PO主怀疑你的智商。
 
------------------------------------ 雷区分界线 ------------------------------------
+--------------------------------- 雷区END分界线 -----------------------------------
 
 为了方便使用，装完后建议做如下配置，当然 it all depends on u ：
 ```
@@ -123,3 +123,5 @@ $ sudo cp /usr/local/keepalived/sbin/keepalived /usr/sbin/
 $ sudo service keepalived start
 Starting keepalived:                                       [  OK  ]
 ```
+
+Continuing ...
