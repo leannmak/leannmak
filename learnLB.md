@@ -41,7 +41,7 @@ NOW，不想死就 pls follow me =.=
 ```
 # 首先检查一下kernels目录下是什么鬼
 $ sudo ll /usr/src/kernels
-drwxr-xr-x. 22 root root 4096 Jun  2 23:11 *2.6.32-504.16.2.el6.x86_64*
+drwxr-xr-x. 22 root root 4096 Jun  2 23:11 2.6.32-504.16.2.el6.x86_64
 
 # 识做啦？
 $ rm -rf /usr/src/linux
